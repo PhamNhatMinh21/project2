@@ -1,16 +1,21 @@
 import pickle
 import pandas as pd
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-# 1. Khởi tạo server và load mô hình .sav
-app = FastAPI(title="Dự đoán giá nhà API")
+app = FastAPI(title="House Price AI App")
 
+# 1. Mount thư mục static chứa file HTML
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 2. Load model .sav
 with open("house_price_model.sav", "rb") as f:
     model = pickle.load(f)
 
 
-# 2. Định nghĩa cấu trúc dữ liệu Mobile gửi lên
+# 3. Định nghĩa schema nhận dữ liệu
 class HouseInput(BaseModel):
     Area: float
     Frontage: float
@@ -23,15 +28,15 @@ class HouseInput(BaseModel):
     Province: str = "Hà Nội"
 
 
+# 4. Khi vào link web -> Mở thẳng file index.html giao diện
 @app.get("/")
-def home():
-    return {"message": "Server AI Dự đoán giá nhà đang hoạt động!"}
+def serve_frontend():
+    return FileResponse("static/index.html")
 
 
-# 3. API nhận data từ Mobile -> Trả về giá tiền
+# 5. Endpoint xử lý tính toán giá tiền
 @app.post("/predict")
 def predict_price(data: HouseInput):
-    # Khớp đúng tên cột như lúc huấn luyện
     df_input = pd.DataFrame(
         {
             "Area": [data.Area],
@@ -46,10 +51,5 @@ def predict_price(data: HouseInput):
         }
     )
 
-    # Dự đoán
-    prediction = model.predict(df_input)[0]
-
-    return {
-        "status": "success",
-        "predicted_price": round(float(prediction), 2),  # Tỷ VNĐ
-    }
+    pred = model.predict(df_input)[0]
+    return {"status": "success", "predicted_price": round(float(pred), 2)}

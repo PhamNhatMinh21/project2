@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Định Giá Bất Động Sản</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #6366F1;
+            --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #311042 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1E293B;
+            --text-sub: #64748B;
+            --border-color: #E2E8F0;
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        /* Khung hiển thị giao diện Mobile */
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header phong cách Mobile App */
+        .app-header {
+            background: var(--primary-gradient);
+            padding: 28px 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -40px;
+            right: -30px;
+        }
+
+        .header-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .app-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .app-header p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 4px;
+        }
+
+        /* Form Content */
+        .app-body {
+            padding: 20px 24px 28px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #94A3B8;
+            font-size: 14px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            background: #F8FAFC;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+        }
+
+        input:focus + .input-icon, select:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Nút dự đoán */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 18px;
+            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* Result Card */
+        .result-card {
+            margin-top: 20px;
+            background: linear-gradient(145deg, #EEF2FF, #E0E7FF);
+            border: 1.5px solid #C7D2FE;
+            border-radius: var(--radius-md);
+            padding: 18px;
+            text-align: center;
+            display: none;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card.active {
+            display: block;
+        }
+
+        .result-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1E1B4B;
+            margin: 6px 0;
+        }
+
+        .result-unit {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .result-desc {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <div class="app-header">
+        <div class="header-tag">
+            <i class="fa-solid fa-brain"></i> Machine Learning Core
+        </div>
+        <h1>Định Giá Nhà Đất AI</h1>
+        <p>Mô hình Gradient Boosting Engine 2024</p>
+    </div>
+
+    <!-- Body Form -->
+    <div class="app-body">
+        
+        <div class="section-title">
+            <i class="fa-solid fa-ruler-combined"></i> Kích thước & Lộ giới
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">Diện tích sàn (m²)</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-chart-area input-icon"></i>
+                <input type="number" id="Area" value="75" placeholder="VD: 75">
+            </div>
+        </div>
+
+        <div class="row-2">
+            <div class="input-group">
+                <label class="input-label">Mặt tiền (m)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-arrows-left-right input-icon"></i>
+                    <input type="number" id="Frontage" value="5.2" step="0.1">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Đường vào (m)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-road input-icon"></i>
+                    <input type="number" id="Access_Road" value="6.0" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-house"></i> Kết cấu công trình
+        </div>
+
+        <div class="row-3">
+            <div class="input-group">
+                <label class="input-label">Số tầng</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-layer-group input-icon"></i>
+                    <input type="number" id="Floors" value="4">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Phòng ngủ</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-bed input-icon"></i>
+                    <input type="number" id="Bedrooms" value="4">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Vệ sinh</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-bath input-icon"></i>
+                    <input type="number" id="Bathrooms" value="4">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-file-contract"></i> Vị trí & Hồ sơ
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">Tỉnh / Thành phố</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-location-dot input-icon"></i>
+                <input type="text" id="Province" value="Hà Nội">
+            </div>
+        </div>
+
+        <div class="row-2">
+            <div class="input-group">
+                <label class="input-label">Pháp lý</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-shield-halved input-icon"></i>
+                    <select id="Legal_status">
+                        <option value="Have certificate">Đã có sổ đỏ</option>
+                        <option value="Innegotiable">Đang chờ sổ</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Nội thất</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-couch input-icon"></i>
+                    <select id="Furniture_state">
+                        <option value="Full">Đầy đủ</option>
+                        <option value="Basic">Cơ bản</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="btn-submit" id="btnPredict" onclick="handlePredict()">
+            <span class="spinner" id="loadingSpinner"></span>
+            <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles"></i> DỰ ĐOÁN GIÁ NGAY</span>
+        </button>
+
+        <!-- Result Card -->
+        <div class="result-card" id="resultBox">
+            <div class="result-badge">Giá thị trường ước tính</div>
+            <div class="result-price">
+                <span id="priceVal">0.00</span> <span class="result-unit">Tỷ VNĐ</span>
+            </div>
+            <p class="result-desc">Độ tin cậy được tối ưu hóa dựa trên 30,000+ dữ liệu giao dịch thực tế.</p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    async function handlePredict() {
+        const btn = document.getElementById("btnPredict");
+        const btnText = document.getElementById("btnText");
+        const spinner = document.getElementById("loadingSpinner");
+        const resultBox = document.getElementById("resultBox");
+        const priceVal = document.getElementById("priceVal");
+
+        // Lấy dữ liệu
+        const payload = {
+            Area: parseFloat(document.getElementById("Area").value) || 0,
+            Frontage: parseFloat(document.getElementById("Frontage").value) || 0,
+            Access_Road: parseFloat(document.getElementById("Access_Road").value) || 0,
+            Floors: parseFloat(document.getElementById("Floors").value) || 1,
+            Bedrooms: parseFloat(document.getElementById("Bedrooms").value) || 1,
+            Bathrooms: parseFloat(document.getElementById("Bathrooms").value) || 1,
+            Legal_status: document.getElementById("Legal_status").value,
+            Furniture_state: document.getElementById("Furniture_state").value,
+            Province: document.getElementById("Province").value.trim()
+        };
+
+        // Loading state
+        btn.disabled = true;
+        btnText.style.display = "none";
+        spinner.style.display = "inline-block";
+
+        try {
+            const res = await fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            
+            if (data.status === "success") {
+                resultBox.classList.add("active");
+                // Hiệu ứng nhảy số
+                animateValue(priceVal, 0, data.predicted_price, 600);
+            } else {
+                alert("Không thể tính toán dự đoán!");
+            }
+        } catch (err) {
+            alert("Lỗi kết nối tới Server AI! Hãy kiểm tra xem Backend FastAPI đã chạy chưa.");
+            console.error(err);
+        } finally {
+            btn.disabled = false;
+            btnText.style.display = "inline-block";
+            spinner.style.display = "none";
+        }
+    }
+
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = (progress * (end - start) + start).toFixed(2);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+</script>
+
+</body>
+</html>
