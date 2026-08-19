@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Định Giá Bất Động Sản</title>
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,16 +11,14 @@
     <style>
         :root {
             --primary: #4F46E5;
-            --primary-light: #6366F1;
             --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
             --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #311042 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #FFFFFF;
             --text-main: #1E293B;
             --text-sub: #64748B;
             --border-color: #E2E8F0;
-            --radius-md: 14px;
+            --radius-md: 12px;
             --radius-lg: 24px;
-            --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -37,17 +35,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 16px;
+            padding: 24px;
         }
 
-        /* Khung hiển thị giao diện Mobile */
-        .app-container {
+        /* Container tổng chia 2 cột ngang */
+        .dashboard-container {
             width: 100%;
-            max-width: 440px;
+            max-width: 1000px;
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-card);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            display: grid;
+            grid-template-columns: 360px 1fr;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.2);
             animation: fadeIn 0.4s ease-out;
@@ -58,80 +57,132 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header phong cách Mobile App */
-        .app-header {
+        /* CỘT TRÁI: Header & Hiển thị kết quả */
+        .left-panel {
             background: var(--primary-gradient);
-            padding: 28px 24px;
+            padding: 36px 28px;
             color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             position: relative;
             overflow: hidden;
         }
 
-        .app-header::after {
+        .left-panel::after {
             content: '';
             position: absolute;
-            width: 140px;
-            height: 140px;
-            background: rgba(255, 255, 255, 0.1);
+            width: 220px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 50%;
-            top: -40px;
-            right: -30px;
+            bottom: -60px;
+            right: -60px;
+            pointer-events: none;
         }
 
-        .header-tag {
+        .brand-tag {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             background: rgba(255, 255, 255, 0.2);
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 14px;
             text-transform: uppercase;
         }
 
-        .app-header h1 {
-            font-size: 22px;
+        .brand-title {
+            font-size: 26px;
             font-weight: 800;
             line-height: 1.2;
+            margin-bottom: 8px;
         }
 
-        .app-header p {
+        .brand-desc {
             font-size: 13px;
             color: rgba(255, 255, 255, 0.8);
-            margin-top: 4px;
+            line-height: 1.5;
         }
 
-        /* Form Content */
-        .app-body {
-            padding: 20px 24px 28px;
+        .result-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .result-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+
+        .result-price {
+            font-size: 34px;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1;
+        }
+
+        .result-unit {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FDE047;
+            margin-left: 4px;
+        }
+
+        .result-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 10px;
+        }
+
+        /* CỘT PHẢI: Form nhập dữ liệu */
+        .right-panel {
+            padding: 36px 32px;
+            background: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--text-sub);
             text-transform: uppercase;
             letter-spacing: 0.8px;
             margin-bottom: 12px;
-            margin-top: 6px;
+            margin-top: 14px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
         .input-group {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .input-label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .input-wrapper {
@@ -142,19 +193,19 @@
 
         .input-icon {
             position: absolute;
-            left: 14px;
+            left: 12px;
             color: #94A3B8;
-            font-size: 14px;
+            font-size: 13px;
             pointer-events: none;
             transition: color 0.2s;
         }
 
         input, select {
             width: 100%;
-            padding: 12px 14px 12px 40px;
+            padding: 10px 12px 10px 36px;
             border: 1.5px solid var(--border-color);
             border-radius: var(--radius-md);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-main);
             background: #F8FAFC;
@@ -165,34 +216,30 @@
         input:focus, select:focus {
             border-color: var(--primary);
             background: #FFFFFF;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
         }
 
-        input:focus + .input-icon, select:focus + .input-icon {
-            color: var(--primary);
-        }
-
-        .row-2 {
+        .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
-        .row-3 {
+        .grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
         }
 
-        /* Nút dự đoán */
+        /* Nút Submit */
         .btn-submit {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: var(--radius-md);
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -200,72 +247,25 @@
             align-items: center;
             gap: 8px;
             margin-top: 18px;
-            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.35);
             transition: all 0.2s ease;
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.5);
+            box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.45);
         }
 
         .btn-submit:active {
             transform: scale(0.98);
         }
 
-        /* Result Card */
-        .result-card {
-            margin-top: 20px;
-            background: linear-gradient(145deg, #EEF2FF, #E0E7FF);
-            border: 1.5px solid #C7D2FE;
-            border-radius: var(--radius-md);
-            padding: 18px;
-            text-align: center;
-            display: none;
-            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-card.active {
-            display: block;
-        }
-
-        .result-badge {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .result-price {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1E1B4B;
-            margin: 6px 0;
-        }
-
-        .result-unit {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .result-desc {
-            font-size: 12px;
-            color: var(--text-sub);
-        }
-
-        /* Loading Spinner */
+        /* Spinner Loading */
         .spinner {
             display: none;
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 0.8s linear infinite;
@@ -274,36 +274,58 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Responsive cho thiết bị di động */
+        @media (max-width: 820px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+            }
+            .left-panel {
+                padding: 28px 20px;
+            }
+            .right-panel {
+                padding: 24px 20px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <!-- Header -->
-    <div class="app-header">
-        <div class="header-tag">
-            <i class="fa-solid fa-brain"></i> Machine Learning Core
+<div class="dashboard-container">
+    <!-- CỘT TRÁI: THÔNG TIN & KẾT QUẢ -->
+    <div class="left-panel">
+        <div>
+            <div class="brand-tag">
+                <i class="fa-solid fa-brain"></i> Machine Learning Core
+            </div>
+            <h1 class="brand-title">Định Giá<br>Nhà Đất AI</h1>
+            <p class="brand-desc">Hệ thống phân tích giá trị bất động sản chính xác dựa trên mô hình Gradient Boosting.</p>
         </div>
-        <h1>Định Giá Nhà Đất AI</h1>
-        <p>Mô hình Gradient Boosting Engine 2024</p>
+
+        <div class="result-box">
+            <div class="result-label">Giá thị trường ước tính</div>
+            <div class="result-price">
+                <span id="priceVal">--</span><span class="result-unit">Tỷ VNĐ</span>
+            </div>
+            <p class="result-sub">Dữ liệu tham chiếu theo biến động thị trường 2024</p>
+        </div>
     </div>
 
-    <!-- Body Form -->
-    <div class="app-body">
-        
+    <!-- CỘT PHẢI: FORM NHẬP THÔNG SỐ -->
+    <div class="right-panel">
         <div class="section-title">
             <i class="fa-solid fa-ruler-combined"></i> Kích thước & Lộ giới
         </div>
 
-        <div class="input-group">
-            <label class="input-label">Diện tích sàn (m²)</label>
-            <div class="input-wrapper">
-                <i class="fa-solid fa-chart-area input-icon"></i>
-                <input type="number" id="Area" value="75" placeholder="VD: 75">
+        <div class="grid-3">
+            <div class="input-group">
+                <label class="input-label">Diện tích (m²)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-chart-area input-icon"></i>
+                    <input type="number" id="Area" value="75" placeholder="m²">
+                </div>
             </div>
-        </div>
-
-        <div class="row-2">
             <div class="input-group">
                 <label class="input-label">Mặt tiền (m)</label>
                 <div class="input-wrapper">
@@ -324,7 +346,7 @@
             <i class="fa-solid fa-house"></i> Kết cấu công trình
         </div>
 
-        <div class="row-3">
+        <div class="grid-3">
             <div class="input-group">
                 <label class="input-label">Số tầng</label>
                 <div class="input-wrapper">
@@ -349,7 +371,7 @@
         </div>
 
         <div class="section-title">
-            <i class="fa-solid fa-file-contract"></i> Vị trí & Hồ sơ
+            <i class="fa-solid fa-file-contract"></i> Vị trí & Pháp lý
         </div>
 
         <div class="input-group">
@@ -360,9 +382,9 @@
             </div>
         </div>
 
-        <div class="row-2">
+        <div class="grid-2">
             <div class="input-group">
-                <label class="input-label">Pháp lý</label>
+                <label class="input-label">Tình trạng pháp lý</label>
                 <div class="input-wrapper">
                     <i class="fa-solid fa-shield-halved input-icon"></i>
                     <select id="Legal_status">
@@ -376,7 +398,7 @@
                 <div class="input-wrapper">
                     <i class="fa-solid fa-couch input-icon"></i>
                     <select id="Furniture_state">
-                        <option value="Full">Đầy đủ</option>
+                        <option value="Full">Đầy đủ nội thất</option>
                         <option value="Basic">Cơ bản</option>
                     </select>
                 </div>
@@ -388,16 +410,6 @@
             <span class="spinner" id="loadingSpinner"></span>
             <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles"></i> DỰ ĐOÁN GIÁ NGAY</span>
         </button>
-
-        <!-- Result Card -->
-        <div class="result-card" id="resultBox">
-            <div class="result-badge">Giá thị trường ước tính</div>
-            <div class="result-price">
-                <span id="priceVal">0.00</span> <span class="result-unit">Tỷ VNĐ</span>
-            </div>
-            <p class="result-desc">Độ tin cậy được tối ưu hóa dựa trên 30,000+ dữ liệu giao dịch thực tế.</p>
-        </div>
-
     </div>
 </div>
 
@@ -406,10 +418,8 @@
         const btn = document.getElementById("btnPredict");
         const btnText = document.getElementById("btnText");
         const spinner = document.getElementById("loadingSpinner");
-        const resultBox = document.getElementById("resultBox");
         const priceVal = document.getElementById("priceVal");
 
-        // Lấy dữ liệu
         const payload = {
             Area: parseFloat(document.getElementById("Area").value) || 0,
             Frontage: parseFloat(document.getElementById("Frontage").value) || 0,
@@ -422,7 +432,6 @@
             Province: document.getElementById("Province").value.trim()
         };
 
-        // Loading state
         btn.disabled = true;
         btnText.style.display = "none";
         spinner.style.display = "inline-block";
@@ -435,16 +444,13 @@
             });
 
             const data = await res.json();
-            
             if (data.status === "success") {
-                resultBox.classList.add("active");
-                // Hiệu ứng nhảy số
                 animateValue(priceVal, 0, data.predicted_price, 600);
             } else {
                 alert("Không thể tính toán dự đoán!");
             }
         } catch (err) {
-            alert("Lỗi kết nối tới Server AI! Hãy kiểm tra xem Backend FastAPI đã chạy chưa.");
+            alert("Lỗi kết nối tới Server AI! Hãy kiểm tra Backend.");
             console.error(err);
         } finally {
             btn.disabled = false;
